@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Sudheer Board</title>
+    <meta name="description" content="A Trello-like kanban task management tool with drag-and-drop functionality, task creation, and board management features.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1 class="header-title">TaskFlow</h1>
+                <span class="header-subtitle">Sudheer Board</span>
+            </div>
+            <div class="header-actions">
+                <button id="undoBtn" class="header-btn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 7v6h6"></path>
+                        <path d="m21 17-3-3-3 3"></path>
+                        <path d="M21 7.9A9 9 0 0 0 12 3C7.5 3 4 6.5 4 12"></path>
+                    </svg>
+                    Undo (Ctrl+Z)
+                </button>
+                <button id="exportBtn" class="header-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export
+                </button>
+                <button id="importBtn" class="header-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17,8 12,3 7,8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Import
+                </button>
+                <input type="file" id="fileInput" accept=".json" style="display: none;">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Board -->
+    <main class="main-content">
+        <div class="board-header">
+            <h2 class="board-title">Project Dashboard</h2>
+            <p class="board-subtitle">Organize your tasks with drag-and-drop simplicity</p>
+        </div>
+
+        <div class="board-container" id="boardContainer">
+            <!-- Lists will be dynamically generated here -->
+        </div>
+
+        <!-- Add List Button -->
+        <div class="add-list-container" id="addListContainer">
+            <button class="add-list-btn" id="addListBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add another list
+            </button>
+        </div>
+    </main>
+
+    <!-- Task Modal -->
+    <div id="taskModal" class="modal-backdrop" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <input type="text" id="modalTaskTitle" class="modal-title-input" placeholder="Task title">
+                    <p class="modal-list-info">in list <span id="modalListTitle"></span></p>
+                </div>
+                <button class="modal-close-btn" id="modalCloseBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                        Description
+                    </h3>
+                    <textarea id="modalTaskDescription" class="modal-description" rows="4" placeholder="Add a more detailed description..."></textarea>
+                </div>
+                
+                <div class="modal-section">
+                    <h3 class="modal-section-title">Actions</h3>
+                    <div class="modal-actions">
+                        <button id="toggleDoneBtn" class="action-btn done-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            Mark Done
+                        </button>
+                        <button id="deleteTaskBtn" class="action-btn delete-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3,6 5,6 21,6"></polyline>
+                                <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
+                            </svg>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="savingIndicator" class="saving-indicator" style="display: none;">
+                Saving changes...
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
